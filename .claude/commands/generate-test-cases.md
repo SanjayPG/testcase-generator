@@ -1,6 +1,6 @@
-Generate test cases for a pasted user story.
+Generate test cases for one or more pasted user stories, using parallel subagents.
 
-Usage: /generate-test-cases <paste the story: title, description, acceptance criteria>
+Usage: /generate-test-cases <paste one or more stories: title, description, acceptance criteria>
 
-Use the `tc-generator` skill on the user story in $ARGUMENTS.
-Output only the test cases.
+Read CLAUDE.md and follow the generate-test-cases plan exactly.
+$ARGUMENTS contains everything the user pasted after /generate-test-cases.
