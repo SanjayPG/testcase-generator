@@ -12,3 +12,6 @@ Thumbs.db
 # Env
 .env
 .env.local
+
+# MCP config (contains PAT)
+.mcp.json
