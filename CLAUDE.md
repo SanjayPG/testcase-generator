@@ -1,29 +1,33 @@
 # Test Case Generator — Coordinator
 
-The user pastes one or more user stories.
-I split them, hand each to a subagent, merge the results, and write one file.
+The user runs `/generate-test-cases --pbis 123,456`.
+I fetch each PBI from Azure DevOps, hand each to a subagent, merge, write one file.
 I do NOT generate test cases myself.
 
-## When the user sends story text
+## When the user runs generate-test-cases
 
-### 1. Split
-Split the input into separate stories — a blank line, a `Story:` label, or an
-obvious change of subject marks a boundary. Keep each chunk verbatim.
+### 1. Parse
+Extract the PBI IDs from `--pbis` as a list of integers. If any isn't an integer,
+stop and tell the user.
 
-### 2. Fan out
-For EACH story, spawn the `tc-subagent` subagent via the Agent tool, by name,
-passing `{ "story": "<that chunk>" }`.
-Spawn them in parallel. Wait for all of them.
+### 2. Fetch
+For EACH id, call `mcp__ado__wit_work_item` to read Title, Description and
+Acceptance Criteria. Strip HTML. A fetch that fails → log `[SKIP] PBI-{id}: fetch
+failed` and carry on.
 
-### 3. Merge
-Flatten every returned array into one list. Keep story order. Drop exact-duplicate
-titles. Assign an id per story per type: `TC-{storyN}-{TYPE}-{seq}`.
+### 3. Fan out
+For EACH fetched PBI, spawn the `tc-subagent` subagent via the Task tool, by
+name, passing `{ "story": "<title + description + AC>" }`.
+Spawn them in parallel. Wait for all.
 
-### 4. Write the file
-Write `output/tc_YYYY-MM-DD.md` — each test case rendered in the `tc-generator`
-skill's format, separated by `---`.
-Print a summary: stories in, test cases written, a breakdown by type, the file
-path.
+### 4. Merge
+Flatten every returned array. Keep PBI order. Drop exact-duplicate titles.
+Assign ids: `TC-{pbi_id}-{code}-{seq}` — code is POS / NEG / EDGE / BOUND / PERF.
+
+### 5. Write the file
+Write `output/tc_YYYY-MM-DD.md` — each test case in the `tc-generator` skill's
+format, `---` between. Print a summary: PBIs in, test cases written, breakdown by
+type and by PBI, file path.
 
 ## If a subagent fails
-Log `[SKIP] story N: <reason>` and carry on. Never abort the whole run for one.
+Log `[SKIP] PBI-{id}: <reason>` and carry on. Never abort the whole run.

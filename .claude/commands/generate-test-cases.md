@@ -1,6 +1,5 @@
-Generate test cases for one or more pasted user stories, using parallel subagents.
+Generate test cases for one or more Azure DevOps PBIs.
 
-Usage: /generate-test-cases <paste one or more stories: title, description, acceptance criteria>
+Usage: /generate-test-cases --pbis 123,456
 
-Read CLAUDE.md and follow the generate-test-cases plan exactly.
-$ARGUMENTS contains everything the user pasted after /generate-test-cases.
+Follow the coordinator plan in CLAUDE.md. $ARGUMENTS is everything after /generate-test-cases.
