@@ -1,5 +1,6 @@
-Generate test cases for one or more Azure DevOps PBIs.
+Generate ADO test cases for the given PBI IDs.
 
-Usage: /generate-test-cases --pbis 123,456
+Usage: /generate-test-cases --pbis 123,456 --context hld,regression
 
-Follow the coordinator plan in CLAUDE.md. $ARGUMENTS is everything after /generate-test-cases.
+Read CLAUDE.md and follow the generate-test-cases execution plan exactly.
+$ARGUMENTS contains everything the user typed after /generate-test-cases.
