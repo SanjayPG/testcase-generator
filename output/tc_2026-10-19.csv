@@ -1,0 +1,143 @@
+﻿ID,Work Item Type,Title,State,Assigned To,Priority,Tags,Area Path,Automated Status,Description,Test Data,Test Type,Step #,Step Action,Step Expected Result
+,Test Case,[TC-2-POS-01] Login succeeds with valid email and password,Design,,1,"positive, auth, login, smoke, regression",,Not Automated,"• Registered user exists with email: user@test.com and password: ValidPass1!
+• Account is active and not locked
+• User is on the login page at /login
+• No active session exists","email: user@test.com, password: ValidPass1!",Positive,1,Navigate to https://app.example.com/login,"Login page loads with Email field, Password field, and Login button visible"
+,,,,,,,,,,,,2,"Type ""user@test.com"" into the Email field",Email is accepted and displayed in the field with no validation error
+,,,,,,,,,,,,3,"Type ""ValidPass1!"" into the Password field","Characters are masked as dots or asterisks, plain text is not visible"
+,,,,,,,,,,,,4,"Click the ""Login"" button on the login form",Form is submitted and the browser begins loading the next page
+,,,,,,,,,,,,5,Observe the browser URL and page content after redirect,"TEST PASS — URL reads /dashboard, user is authenticated, no error message is shown"
+,Test Case,[TC-2-POS-02] Session stays active when user is active within 30 minutes,Design,,2,"positive, auth, session, regression",,Not Automated,"• Registered user exists with email: user@test.com and password: ValidPass1!
+• User is logged in and on /dashboard
+• Session timeout is configured to 30 minutes of inactivity","email: user@test.com, password: ValidPass1!, idle_time: 15m, inactivity_timeout: 30m",Positive,1,"Log in with email ""user@test.com"" and password ""ValidPass1!"" from /login",User lands on /dashboard
+,,,,,,,,,,,,2,Leave the browser idle for 15 minutes without any interaction,"Dashboard remains displayed, no timeout message appears"
+,,,,,,,,,,,,3,Click any navigation link on the dashboard after the 15 minute idle period,Target page loads without redirect to /login
+,,,,,,,,,,,,4,"Leave the browser idle for another 15 minutes, then click the same navigation link again","Page loads, as inactivity timer was reset by the earlier click and only 15 minutes elapsed"
+,,,,,,,,,,,,5,Observe the browser URL and session state,"TEST PASS — user remains authenticated, URL does not redirect to /login"
+,Test Case,[TC-2-NEG-01] Login returns generic error when password is incorrect,Design,,1,"negative, auth, login, security, regression",,Not Automated,"• Registered user exists with email: user@test.com and password: ValidPass1!
+• User is on the login page at /login
+• No active session exists","email: user@test.com, password: WrongPass99",Negative,1,Navigate to https://app.example.com/login,Login page loads with Email and Password fields
+,,,,,,,,,,,,2,"Type ""user@test.com"" into the Email field",Email is displayed in the field
+,,,,,,,,,,,,3,"Type ""WrongPass99"" into the Password field",Characters are masked
+,,,,,,,,,,,,4,"Click the ""Login"" button on the login form",Form is submitted and an error message appears
+,,,,,,,,,,,,5,Read the error message text on the login form,"Message is generic, such as ""Invalid email or password"", and does not state that the password specifically is wrong"
+,,,,,,,,,,,,6,Observe the browser URL,"TEST PASS — generic error displayed, URL remains /login, no session is created"
+,Test Case,[TC-2-NEG-02] Login returns same generic error when email is not registered,Design,,1,"negative, auth, login, security",,Not Automated,"• No account exists for email: unknown@test.com
+• User is on the login page at /login
+• No active session exists","email: unknown@test.com, password: ValidPass1!",Negative,1,Navigate to https://app.example.com/login,Login page loads with Email and Password fields
+,,,,,,,,,,,,2,"Type ""unknown@test.com"" into the Email field",Email is displayed in the field with no format error
+,,,,,,,,,,,,3,"Type ""ValidPass1!"" into the Password field",Characters are masked
+,,,,,,,,,,,,4,"Click the ""Login"" button on the login form",Form is submitted and an error message appears
+,,,,,,,,,,,,5,Compare the error text with the message from the incorrect password scenario,Message wording is identical and does not reveal that the email is unregistered
+,,,,,,,,,,,,6,Observe the browser URL,"TEST PASS — generic error displayed, URL remains /login, no session is created"
+,Test Case,[TC-2-NEG-03] Login returns validation error when email format is invalid,Design,,2,"negative, auth, login, ui, validation",,Not Automated,"• User is on the login page at /login
+• No active session exists","email: invalidemail.com, password: ValidPass1!",Negative,1,Navigate to https://app.example.com/login,Login page loads with Email and Password fields
+,,,,,,,,,,,,2,"Type ""invalidemail.com"" into the Email field",Text is displayed in the Email field
+,,,,,,,,,,,,3,"Type ""ValidPass1!"" into the Password field",Characters are masked
+,,,,,,,,,,,,4,"Click the ""Login"" button on the login form",Form submission is blocked and an email format validation message is shown
+,,,,,,,,,,,,5,Observe the browser URL and network activity,"TEST PASS — email format error displayed, no authentication request sent, URL remains /login"
+,Test Case,[TC-2-NEG-04] Login returns required-field error when password is empty,Design,,2,"negative, auth, login, ui, validation",,Not Automated,"• Registered user exists with email: user@test.com
+• User is on the login page at /login
+• Password field is empty","email: user@test.com, password: (empty)",Negative,1,Navigate to https://app.example.com/login,Login page loads with empty Email and Password fields
+,,,,,,,,,,,,2,"Type ""user@test.com"" into the Email field",Email is displayed in the field
+,,,,,,,,,,,,3,"Leave the Password field empty and click the ""Login"" button",Form submission is blocked
+,,,,,,,,,,,,4,Read the message next to the Password field,A required-field message is shown for Password
+,,,,,,,,,,,,5,"Clear the Email field and click the ""Login"" button with both fields empty",Required-field messages are shown for both Email and Password
+,,,,,,,,,,,,6,Observe the browser URL,"TEST PASS — required-field errors displayed, no login occurs, URL remains /login"
+,Test Case,[TC-2-EDGE-01] Login handles password with special characters,Design,,3,"edge-case, auth, login, ui",,Not Automated,"• Registered user exists with email: special@test.com and password: P@ss<>'"";&%1x
+• Account is active and not locked
+• User is on the login page at /login","email: special@test.com, password: P@ss<>'"";&%1x",Edge Case,1,Navigate to https://app.example.com/login,Login page loads with Email and Password fields
+,,,,,,,,,,,,2,"Type ""special@test.com"" into the Email field",Email is displayed in the field
+,,,,,,,,,,,,3,"Type ""P@ss<>'\"";&%1x"" into the Password field","All characters are accepted and masked, none are stripped or escaped visibly"
+,,,,,,,,,,,,4,"Click the ""Login"" button on the login form",Form is submitted without a script or server error
+,,,,,,,,,,,,5,Observe the browser URL and page content,"TEST PASS — URL reads /dashboard, user is authenticated with no error shown"
+,Test Case,[TC-2-EDGE-02] Login handles double-click on Login button,Design,,3,"edge-case, auth, login, ui",,Not Automated,"• Registered user exists with email: user@test.com and password: ValidPass1!
+• User is on the login page at /login
+• No active session exists","email: user@test.com, password: ValidPass1!, clicks: 2 within 200ms",Edge Case,1,Navigate to https://app.example.com/login,Login page loads with Email and Password fields
+,,,,,,,,,,,,2,"Type ""user@test.com"" into the Email field",Email is displayed in the field
+,,,,,,,,,,,,3,"Type ""ValidPass1!"" into the Password field",Characters are masked
+,,,,,,,,,,,,4,"Double-click the ""Login"" button twice within 200 milliseconds",Form is submitted; the button does not trigger a visible duplicate error
+,,,,,,,,,,,,5,Observe the browser URL and any error banners,"TEST PASS — user lands on /dashboard once, a single session is active, no error is displayed"
+,Test Case,[TC-2-PERF-01] POST /login meets SLA under 50 concurrent users,Design,,2,"performance, auth, login, api",,Not Automated,"• Registered test users exist with valid credentials
+• k6 is installed on the load generator
+• Test environment is isolated from production","concurrent_users: 50, duration: 60s, tool: k6, endpoint: POST /api/v1/auth/login, body: {""email"":""user@test.com"",""password"":""ValidPass1!""}",Performance,1,"Configure a k6 script to send POST /api/v1/auth/login with body {""email"":""user@test.com"",""password"":""ValidPass1!""} using 50 virtual users for 60s",k6 script validates and is ready to run
+,,,,,,,,,,,,2,Run the k6 script against the test environment,50 virtual users start and requests are sent
+,,,,,,,,,,,,3,Monitor the k6 live output during the run,Requests complete with HTTP 200 and no connection errors
+,,,,,,,,,,,,4,Collect the k6 summary after 60s,"Summary lists P95 latency, error rate, and throughput"
+,,,,,,,,,,,,5,Compare the summary metrics with the SLA thresholds,"TEST PASS — P95 < 500ms, error_rate < 1%, throughput > 50 req/s"
+,Test Case,[TC-2-BOUND-01] Session active at 29m59s but expires at 30m00s,Design,,1,"boundary, auth, session, regression",,Not Automated,"• Registered user exists with email: user@test.com and password: ValidPass1!
+• Session inactivity timeout is 30 minutes
+• A timer is available to measure idle time precisely
+• Each check uses a fresh login","email: user@test.com, password: ValidPass1!, idle_times: 29m59s, 30m00s, 30m01s",Boundary,1,"Log in with ""user@test.com"" and ""ValidPass1!"", then stay idle for 29 minutes 59 seconds",Dashboard remains displayed during the idle period
+,,,,,,,,,,,,2,Click the dashboard navigation link at 29m59s of inactivity,Page loads normally and the session is still valid
+,,,,,,,,,,,,3,"Log in again with ""user@test.com"" and ""ValidPass1!"", then stay idle for exactly 30 minutes 00 seconds",No interaction occurs during the idle period
+,,,,,,,,,,,,4,Click the dashboard navigation link at 30m00s of inactivity,User is redirected to /login because the session has expired
+,,,,,,,,,,,,5,"Log in again with ""user@test.com"" and ""ValidPass1!"", then stay idle for 30 minutes 01 seconds",No interaction occurs during the idle period
+,,,,,,,,,,,,6,Click the dashboard navigation link at 30m01s of inactivity,User is redirected to /login and the session is not restored
+,,,,,,,,,,,,7,Observe the browser URL after the final redirect,"TEST PASS — session valid at 29m59s, expired at 30m00s and 30m01s, URL reads /login"
+,Test Case,[TC-3-POS-01] Password reset succeeds with registered email and valid new password,Design,,1,"positive, auth, password-reset, smoke, regression",,Not Automated,"• User account exists with email: user@test.com
+• Account is active and not locked
+• User is on the login page at /login
+• User can access the user@test.com inbox","email: user@test.com, new_password: NewPass#2024, confirm_password: NewPass#2024",Positive,1,"Click the ""Forgot Password"" link on the login page",Forgot Password form loads with an Email field and a submit button
+,,,,,,,,,,,,2,"Type ""user@test.com"" into the Email field",Email is accepted and displayed in the field
+,,,,,,,,,,,,3,"Click the ""Send Reset Link"" button",A message confirms a reset email has been sent
+,,,,,,,,,,,,4,Open the password reset email in the user@test.com inbox and click the reset link,Browser opens the reset password form with New Password and Confirm Password fields
+,,,,,,,,,,,,5,"Type ""NewPass#2024"" into the New Password and Confirm Password fields",Characters are masked and no validation error is shown
+,,,,,,,,,,,,6,"Click the ""Reset Password"" button",Browser begins processing the form submission
+,,,,,,,,,,,,7,Observe the page content after submission,"TEST PASS — confirmation message ""Password reset successful"" is displayed and user can log in with NewPass#2024"
+,Test Case,[TC-3-POS-02] Forgot Password link is visible and opens the reset request form,Design,,2,"positive, auth, password-reset, ui, smoke",,Not Automated,"• User is not logged in
+• User is on the login page at /login",url: https://app.example.com/login,Positive,1,Navigate to https://app.example.com/login,"Login page loads with Email field, Password field, and Login button visible"
+,,,,,,,,,,,,2,"Locate the ""Forgot Password"" link below the Password field","The ""Forgot Password"" link is visible and enabled"
+,,,,,,,,,,,,3,"Click the ""Forgot Password"" link",Browser navigates to the Forgot Password page
+,,,,,,,,,,,,4,Observe the Forgot Password page content,"TEST PASS — Email field and submit button are displayed, user is not logged in"
+,Test Case,[TC-3-NEG-01] Forgot Password returns error when email is not registered,Design,,2,"negative, auth, password-reset, security",,Not Automated,"• No account exists with email: unknown@test.com
+• User is on the Forgot Password page",email: unknown@test.com,Negative,1,"Navigate to https://app.example.com/login and click the ""Forgot Password"" link",Forgot Password form loads with an Email field
+,,,,,,,,,,,,2,"Type ""unknown@test.com"" into the Email field",Email is accepted and displayed in the field
+,,,,,,,,,,,,3,"Click the ""Send Reset Link"" button",Browser begins processing the form submission
+,,,,,,,,,,,,4,Observe the page message after submission,A generic message is shown that does not confirm whether the account exists
+,,,,,,,,,,,,5,Check the unknown@test.com mailbox for a reset email,TEST PASS — no reset email is sent and no account information is disclosed
+,Test Case,[TC-3-NEG-02] Forgot Password returns error when email format is invalid,Design,,2,"negative, auth, password-reset, validation",,Not Automated,• User is on the Forgot Password page at /forgot-password,email: invalidemail.com,Negative,1,Navigate to https://app.example.com/forgot-password,Forgot Password form loads with an empty Email field
+,,,,,,,,,,,,2,"Type ""invalidemail.com"" into the Email field",Text is displayed in the field
+,,,,,,,,,,,,3,"Click the ""Send Reset Link"" button",Form validation runs
+,,,,,,,,,,,,4,Observe the Email field and page message,An invalid email format error is shown next to the Email field
+,,,,,,,,,,,,5,Check the mailbox of the test account,"TEST PASS — validation error displayed, no reset email sent, URL stays /forgot-password"
+,Test Case,[TC-3-NEG-03] Reset password returns error when new password fails security rules,Design,,1,"negative, auth, password-reset, security, validation",,Not Automated,"• User account exists with email: user@test.com
+• A valid reset link was received in the user@test.com inbox
+• Reset password form is open","new_password: password, confirm_password: password",Negative,1,Click the reset link in the reset email,Reset password form loads with New Password and Confirm Password fields
+,,,,,,,,,,,,2,"Type ""password"" into the New Password field",Characters are masked
+,,,,,,,,,,,,3,"Type ""password"" into the Confirm Password field",Characters are masked
+,,,,,,,,,,,,4,"Click the ""Reset Password"" button",Form validation runs
+,,,,,,,,,,,,5,Observe the password field messages,An error states the password must include a special character and meet the minimum length rules
+,,,,,,,,,,,,6,Navigate to https://app.example.com/login and log in with the old password,"TEST PASS — password is not changed, no success message was shown, old password still works"
+,Test Case,[TC-3-NEG-04] Reset link returns error when link is expired or already used,Design,,1,"negative, auth, password-reset, security",,Not Automated,"• User account exists with email: user@test.com
+• A reset link was already used once to reset the password, or its time limit has passed","email: user@test.com, link_state: used or expired",Negative,1,Open the used or expired reset link from the user@test.com email in the browser,Browser begins loading the link
+,,,,,,,,,,,,2,Observe the page content,An error states the reset link is invalid or has expired
+,,,,,,,,,,,,3,Look for New Password and Confirm Password fields on the page,No reset password form fields are displayed
+,,,,,,,,,,,,4,"Click the ""Request a new link"" option or navigate to /forgot-password",Forgot Password form loads so the user can request a new link
+,,,,,,,,,,,,5,Observe the final page state,TEST PASS — password is not changed and the user is directed to request a new reset link
+,Test Case,[TC-3-EDGE-01] Forgot Password handles empty email field,Design,,3,"edge-case, auth, password-reset, validation",,Not Automated,• User is on the Forgot Password page at /forgot-password,email: (empty),Edge Case,1,Navigate to https://app.example.com/forgot-password,Forgot Password form loads with an empty Email field
+,,,,,,,,,,,,2,"Leave the Email field empty and click the ""Send Reset Link"" button",Form validation runs
+,,,,,,,,,,,,3,Observe the Email field,A required field error is displayed next to the Email field
+,,,,,,,,,,,,4,Observe the page URL and confirmation messages,"TEST PASS — no confirmation message appears, no email is sent, URL stays /forgot-password"
+,Test Case,[TC-3-EDGE-02] Forgot Password handles email with special characters,Design,,3,"edge-case, auth, password-reset, security",,Not Automated,"• User is on the Forgot Password page at /forgot-password
+• No account exists with the entered value","email: <script>alert(1)</script>'"";&%@test.com",Edge Case,1,Navigate to https://app.example.com/forgot-password,Forgot Password form loads with an empty Email field
+,,,,,,,,,,,,2,"Type ""<script>alert(1)</script>'\"";&%@test.com"" into the Email field",Text is displayed in the field as plain characters
+,,,,,,,,,,,,3,"Click the ""Send Reset Link"" button",Form is validated or submitted
+,,,,,,,,,,,,4,Observe the page for script execution and messages,No alert dialog appears and input is not rendered as HTML
+,,,,,,,,,,,,5,Observe the final response message,"TEST PASS — invalid email error or generic message shown, no script executed, no server error page"
+,Test Case,[TC-3-EDGE-03] Reset link handles being requested twice in quick succession,Design,,3,"edge-case, auth, password-reset, concurrent",,Not Automated,"• User account exists with email: user@test.com
+• User is on the Forgot Password page","email: user@test.com, submissions: 2",Edge Case,1,"Type ""user@test.com"" into the Email field on the Forgot Password page",Email is accepted and displayed in the field
+,,,,,,,,,,,,2,"Double-click the ""Send Reset Link"" button",Form is submitted without a server error
+,,,,,,,,,,,,3,Open the user@test.com inbox and open the newest reset email,At least one reset email is present
+,,,,,,,,,,,,4,Click the reset link in the newest email,Reset password form loads
+,,,,,,,,,,,,5,"Type ""NewPass#2024"" into the New Password and Confirm Password fields and click ""Reset Password""",Password reset is processed
+,,,,,,,,,,,,6,Observe the page content,TEST PASS — confirmation message is shown and the account remains usable with a single consistent password
+,Test Case,[TC-3-BOUND-01] New password length at minimum length boundary of 8 characters,Design,,2,"boundary, auth, password-reset, validation",,Not Automated,"• User account exists with email: user@test.com
+• Reset password form is open from a valid reset link
+• Assumed minimum password length is 8 characters (AC states min length without a value)","below_boundary: Ab#1xyz (7 chars), at_boundary: Ab#1xyzw (8 chars), above_boundary: Ab#1xyzwq (9 chars)",Boundary,1,"Type ""Ab#1xyz"" into the New Password and Confirm Password fields",Characters are masked
+,,,,,,,,,,,,2,"Click the ""Reset Password"" button",A minimum length error is displayed and the password is not changed
+,,,,,,,,,,,,3,"Clear both fields and type ""Ab#1xyzw"" into the New Password and Confirm Password fields",No validation error is shown
+,,,,,,,,,,,,4,"Click the ""Reset Password"" button",Reset is accepted and a confirmation message is displayed
+,,,,,,,,,,,,5,Request a new reset link and open the reset form again,Reset password form loads with empty fields
+,,,,,,,,,,,,6,"Type ""Ab#1xyzwq"" into the New Password and Confirm Password fields and click ""Reset Password""",Reset is accepted and a confirmation message is displayed
+,,,,,,,,,,,,7,"Log in with email ""user@test.com"" and password ""Ab#1xyzwq""","TEST PASS — 7 characters rejected, 8 and 9 characters accepted, login succeeds with the latest password"
